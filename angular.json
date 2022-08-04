@@ -1,0 +1,38 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "ng-forms": {
+      "projectType": "library",
+      "root": "projects/ng-forms",
+      "sourceRoot": "projects/ng-forms/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ng-forms/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ng-forms/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ng-forms/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ng-forms/src/test.ts",
+            "tsConfig": "projects/ng-forms/tsconfig.spec.json",
+            "karmaConfig": "projects/ng-forms/karma.conf.js"
+          }
+        }
+      }
+    }
+  }
+}
