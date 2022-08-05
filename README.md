@@ -219,7 +219,7 @@ interface Role {
       this.form = this._formService.getRootForm()
       // or you can get only the valueChanges.
       // NOTE that formChange will emit the getRawValue() call
-      this._formService.formChange$.subscrible(console.log);
+      this._formService.formChange$.subscribe(console.log);
     }
 
     // will hold the entire aggregated form from all the subcomponents where you registered slices of the form.
