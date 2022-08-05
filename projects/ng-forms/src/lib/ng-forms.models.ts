@@ -96,9 +96,7 @@ export type TypedFormGroup<Type> =
   | StrictFormGroup<Type>
   | FlatFormGroup<Type>;
 
-export type TypedAbstractControl<T> =
-  | TypedFormGroup<T[keyof T]>
-  | FormControl<T[keyof T]>;
+export type TypedAbstractControl<T> = TypedFormGroup<T> | FormControl<T>;
 
 export class BasicFormGroup<Type> extends FormGroup<FormControlsFor<Type>> {}
 
@@ -123,5 +121,6 @@ export class UnrestrictedFormGroup<Type> extends FormGroup<{
     ?
         | FormArray<TypedFormGroup<ArrayElementType>>
         | FormArray<NonOptionalFormControl<ArrayElementType>>
+        | NonOptionalFormControl<ArrayElementType[]>
     : TypedAbstractControl<Type[Key]>;
 }> {}

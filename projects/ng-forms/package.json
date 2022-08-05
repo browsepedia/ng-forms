@@ -1,6 +1,12 @@
 {
   "name": "@browsepedia/ng-forms",
-  "version": "1.0.0",
+  "version": "1.0.3",
+  "private": false,
+  "homepage": "https://github.com/browsepedia/ng-forms",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/browsepedia/ng-forms"
+  },
   "peerDependencies": {
     "@angular/common": "^14.0.0",
     "@angular/core": "^14.0.0"

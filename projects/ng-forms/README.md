@@ -15,7 +15,7 @@ This library has 2 funcionalities:
 1. Better typings for the already typed Angular 14 Reactive Forms.
 2. An @Injectable() service that lets you aggregate Reactive Forms data accross multiple components/pages.
 
-#### Better Typings
+#### 1. Better Typings
 
 Angular 14 shipped a new feature that every Angular developer craved: typing FormGroups. Unfortunatelly, these are very loosely typed, meaning you cannot pass an entity type to a FormGroup generic type, you must pass a ` Record<string, AbstractControl<T>>` to the FormGroup generic.
 
@@ -176,3 +176,149 @@ FormGroup<{
 }>
 
 ```
+
+#### 2. Form Aggregator
+
+The Form Aggregator is basically an `@Injectable()` service named `NgFormsService<T>` where `T` is an entity - `User` for example.
+
+##### Usage
+
+`NgFormService` is set in the providers array of `NgFormsModule`, which means you can import it in your lazy loaded module to get a per module instance of the service.
+
+> Note that for this to work and not have data leak from one form to another this Service NEEDS to be singleton per feature or per component tree where you are using it.
+
+Either import `NgFormsModule` in your lazy loaded module or set `NgFormService<T>` in the providers of your component from which you start your aggregated form.
+
+Example:
+
+````ts
+// user.ts
+interface User {
+  name: string;
+  age: number;
+  history: {
+    hiredDate: Date;
+    position: string;
+  };
+  roles: Role[];
+  jobTitles: string[];
+}
+
+interface Role {
+  name: string;
+}
+
+
+/// user-form-root.component.ts
+  @Component({
+    selector: 'app-user-form-root```,
+    providers: [NgFormService<User>]
+  })
+  export class UserFormRootComponent {
+    constructor(private _formService: NgFormService<User>) {
+      this.form = this._formService.getRootForm()
+      // or you can get only the valueChanges.
+      // NOTE that formChange will emit the getRawValue() call
+      this._formService.formChange$.subscrible(console.log);
+    }
+
+    // will hold the entire aggregated form from all
+    // the subcomponents where you registered slices of the form.
+    protected form: UntypedFormGroup<T>;
+  }
+
+  // user-history.component.ts
+    export class UserHistoryComponent {
+    constructor(private _formService: NgFormService<User>) {
+      this.form = new SimpleFormGroup<User['history']>({
+        hiredDate: FormControl<Date>(
+          new Date(), { nonNullable: true }
+        ),
+        position: FormControl<string>('',
+          { nonNullable: true }
+        )
+      });
+
+      // you will get an error if you pass a key
+      // which doesn't exist on the User interface.
+      this._formService.registerFormControl<User>(
+        'history',
+        this.form
+      )
+    }
+
+    protected form: SimpleFormGroup<User['history']>;
+  }
+
+  // user-roles.component.ts
+    export class UserRolesComponent {
+    constructor(private _formService: NgFormService<User>) {
+      this.form = new FormArray<SimpleFormGroup<Role>>([]);
+
+      // you will get an error if you pass a key
+      // which doesn't exist on the User interface.
+      this._formService.registerFormControl<User>(
+        'roles',
+        this.form
+      )
+    }
+
+    protected form: FormArray<SimpleFormGroup<Role>>;
+  }
+````
+
+#### Simpler usage.
+
+Angular 14 also introduced constructor time usage of the `inject()` function. This library also provides an alternative to constructor injecting of the `NgFormService` by using `injectable functions`.
+The above example becomes the following:
+
+````ts
+// user.ts
+interface User {
+  name: string;
+  age: number;
+  history: {
+    hiredDate: Date;
+    position: string;
+  };
+  roles: Role[];
+  jobTitles: string[];
+}
+
+interface Role {
+  name: string;
+}
+
+
+/// user-form-root.component.ts
+  import { getRootFormGroupValueChange, getRootFormGroup, registerFormControl } from '@browsepedia/ng-forms';
+
+  @Component({
+    selector: 'app-user-form-root```,
+    providers: [NgFormService<User>]
+  })
+  export class UserFormRootComponent {
+    // will hold the entire aggregated form from all the subcomponents where you registered slices of the form.
+    protected form = getRootFormGroup<User>();
+    private _valueChange$ = getRootFormGroupValueChange<User>()
+  }
+
+  // user-history.component.ts
+    export class UserHistoryComponent {
+    protected form: SimpleFormGroup<User['history']> =
+      registerFormControl(
+        new SimpleFormGroup<User['history']>({
+        hiredDate: FormControl<Date>(new Date(), { nonNullable: true }),
+        position: FormControl<string>('', { nonNullable: true })
+      })
+    );
+  }
+
+  // user-roles.component.ts
+    export class UserRolesComponent {
+    protected form: FormArray<SimpleFormGroup<Role>> =
+      registerFormControl(
+      new FormArray<SimpleFormGroup<Role>>([])
+    );
+  }
+````
