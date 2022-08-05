@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ng-forms": {
+    "@browsepedia/ng-forms": {
       "projectType": "library",
       "root": "projects/ng-forms",
       "sourceRoot": "projects/ng-forms/src",
