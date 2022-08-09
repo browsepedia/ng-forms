@@ -291,7 +291,11 @@ interface Role {
 
 
 /// user-form-root.component.ts
-  import { getRootFormGroupValueChange, getRootFormGroup, registerFormControl } from '@browsepedia/ng-forms';
+  import {
+    getRootFormGroupValueChange,
+    getRootFormGroup,
+    registerFormControl
+  } from '@browsepedia/ng-forms';
 
   @Component({
     selector: 'app-user-form-root```,
@@ -308,7 +312,10 @@ interface Role {
     protected form: SimpleFormGroup<User['history']> =
       registerFormControl(
         new SimpleFormGroup<User['history']>({
-        hiredDate: FormControl<Date>(new Date(), { nonNullable: true }),
+        hiredDate: FormControl<Date>(
+          new Date(),
+          { nonNullable: true }
+        ),
         position: FormControl<string>('', { nonNullable: true })
       })
     );

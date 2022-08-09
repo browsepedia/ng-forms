@@ -8,7 +8,7 @@ export const getRootFormGroupValueChange = <T>(): Observable<T> =>
   inject(NgFormsService<T>).formChange$;
 
 export const registerFormControl =
-  <T>(key: keyof T, formGroup: TypedAbstractControl<T>): TypedAbstractControl<T> => {
+  <T>(key: keyof T, formGroup: TypedAbstractControl<T[keyof T]>): TypedAbstractControl<T[keyof T]> => {
     inject(NgFormsService<T>).registerFormControl<T>(key as any, formGroup);
 
     return formGroup;

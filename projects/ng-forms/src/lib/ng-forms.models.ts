@@ -1,4 +1,5 @@
 import { FormArray, FormControl, FormGroup } from '@angular/forms';
+import { registerFormControl } from './ng-forms.injectable-fns';
 
 type NoUndefined<Type> = Type extends undefined ? never : Type;
 
