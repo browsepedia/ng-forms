@@ -21,11 +21,15 @@ export class NgFormsService<T extends Record<any, any>> {
     {} as any
   );
 
-  registerFormControl<T>(
+  registerFormControl(
     key: keyof T,
     formGroup: TypedAbstractControl<T[keyof T]>
   ): void {
     this._form.setControl(key as any, formGroup);
+  }
+
+  unregisterFormControl(key: keyof T): void {
+    this._form.removeControl(key as any);
   }
 
   getFormControl(
