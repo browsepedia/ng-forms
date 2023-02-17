@@ -10,6 +10,11 @@ type NoUndefined<Type> = Type extends undefined ? never : Type;
  */
 type NonOptionalFormControl<Type> = FormControl<NoUndefined<Type>>;
 
+export type StrictFormArray<T> = FormArray<StrictFormGroup<T>>;
+export type NonOptionalFormArray<T> = FormArray<NonOptionalFormControl<T>>;
+export type FlatFormArray<T> = FormArray<FlatFormGroup<T>>;
+export type TypedFormArray<T> = FormArray<TypedFormGroup<T>>;
+
 /**
  * Given an type T, it generates the FormGroup T argument based on the values of each keys
  * without mapping the object values to its corresponding AbstractControl instance.
@@ -17,7 +22,7 @@ type NonOptionalFormControl<Type> = FormControl<NoUndefined<Type>>;
  * Arrays are mapped to FormControl.
  * Objects are mapped to FormControl.
  */
-export type SimpleFormControlsFor<T extends Record<any, any>> = {
+export type SimpleFormControlsFor<T> = {
   [K in keyof T]-?: FormControl<T[K]>;
 };
 
@@ -28,7 +33,7 @@ export type SimpleFormControlsFor<T extends Record<any, any>> = {
  * Arrays are mapped to FormControl.
  * Objects are mapped to FormGroup.
  */
-export type FormControlsFor<T extends Record<any, any>> = {
+export type FormControlsFor<T> = {
   [K in keyof T]-?: T[K] extends any[]
     ? NonOptionalFormControl<T[K]>
     : T[K] extends Date
@@ -47,11 +52,11 @@ export type FormControlsFor<T extends Record<any, any>> = {
  * Arrays are mapped to FormArray.
  * Objects are mapped to FormGroup.
  */
-export type StrictFormControlsFor<T extends Record<any, any>> = {
+export type StrictFormControlsFor<T> = {
   [K in keyof T]-?: T[K] extends (infer ArrayElementType)[]
     ? ArrayElementType extends string | number | boolean | null
-      ? FormArray<NonOptionalFormControl<ArrayElementType>>
-      : FormArray<StrictFormGroup<ArrayElementType>>
+      ? NonOptionalFormArray<ArrayElementType>
+      : StrictFormArray<ArrayElementType>
     : T[K] extends Date
     ? NonOptionalFormControl<Date>
     : T[K] extends null
@@ -70,7 +75,7 @@ export type StrictFormControlsFor<T extends Record<any, any>> = {
  * Primitive type arrays, including Date and null (number[], Date[], etc) are mapped to FormControl
  * Objects are mapped to FormGroup.
  */
-export type FlatFormControlsForm<T extends Record<any, any>> = {
+export type FlatFormControlsForm<T> = {
   [K in keyof T]-?: T[K] extends (infer ArrayElementType)[]
     ? ToFlatStrictFormArray<T[K], ArrayElementType>
     : T[K] extends Date
@@ -88,7 +93,7 @@ type ToFlatStrictFormArray<Type, ArrayElementType> =
     : ArrayElementType extends null
     ? NonOptionalFormControl<Type>
     : ArrayElementType extends Record<any, any> | undefined
-    ? FormArray<FlatFormGroup<ArrayElementType>>
+    ? FlatFormArray<ArrayElementType>
     : NonOptionalFormControl<Type>;
 
 export type TypedFormGroup<Type> =
@@ -120,8 +125,8 @@ export class FlatFormGroup<T> extends FormGroup<FlatFormControlsForm<T>> {}
 export class UnrestrictedFormGroup<Type> extends FormGroup<{
   [Key in keyof Type]-?: Type[Key] extends (infer ArrayElementType)[]
     ?
-        | FormArray<TypedFormGroup<ArrayElementType>>
-        | FormArray<NonOptionalFormControl<ArrayElementType>>
+        | TypedFormArray<ArrayElementType>
+        | NonOptionalFormArray<ArrayElementType>
         | NonOptionalFormControl<ArrayElementType[]>
     : TypedAbstractControl<Type[Key]>;
 }> {}
